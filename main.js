@@ -78,7 +78,7 @@
         }
         else {
             const len = video.duration * inputFPS;
-            _w = _h = (Math.sqrt(len) + 1 | 0) ** 2;
+            _w = _h = Math.sqrt(len) + 1 | 0;
         }
         const width = 15,
               height = is12() ? 12 : 11,
@@ -99,7 +99,6 @@
                           _y = y * 12 + ((i >> 2) / 15 | 0),
                           output = getSprite(...data.slice(i, i + 3), inputType());
                     if(!output) throw msg('getSprite is err', true);
-                    if(yuka[_y] == void 0) console.log(y, x, _y, _x);
                     yuka[_y][_x] = output[3];
                     if(output[4]) mono[_y][_x] = output[4];
                 }
