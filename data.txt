@@ -1,0 +1,8 @@
+#HERO
+3,7#END
+
+#BGM
+#END
+
+#BGIMG
+#END
