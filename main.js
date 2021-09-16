@@ -122,8 +122,8 @@
         for(let y = 0; y < 20; y++) {
             for(let x = 0; x < 25; x++) {
                 evts.push(`#MV_CA\ntx:${x * 15 + 7},ty:${y * 12 + 5},t:0,s:1,`);
+                evts.push(`#WAIT\nt:${wait},`);
             }
-            evts.push(`#WAIT\nt:${wait},`);
         }
         const mapData = [
             await(await fetch('data.txt')).text(),
