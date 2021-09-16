@@ -79,12 +79,12 @@
                 const imgData = ctx.getImageData(0, 0, width, height),
                       {data} = imgData;
                 for(let i = 0; i < data.length; i += 4) {
-                    const _x = (i >> 2) % width,
-                          _y = (i >> 2) / 12 | 0,
+                    const _x = x * 15 + (i >> 2) % 15,
+                          _y = y * 12 + (i >> 2) / 12 | 0,
                           output = getSprite(...data.slice(i, i + 3), inputType());
                     if(!output) throw msg('getSprite is err', true);
-                    yuka[y + _y][x + _x] = output[3];
-                    if(output[4]) mono[y + _y][x + _x] = output[4];
+                    yuka[_y][_x] = output[3];
+                    if(output[4]) mono[_y][_x] = output[4];
                 }
                 await dialog(`${now}/500`);
             }
@@ -114,11 +114,11 @@
         evts.push(`#MV_PA\ntx:300,ty:300,t:0,n:1,s:1,`);
         evts.push(`#CH_YB\nv:FtutLA63Cp8,`);
         evts.push(`#WAIT\nt:3000,`);
-        evts.push(`#PS_YB\n`);
+        evts.push(`#PS_YB`);
         evts.push(`#WAIT\nt:500,`);
         evts.push(`#SK_YB\ns:0,`);
         evts.push(`#WAIT\nt:500,`);
-        evts.push(`#RS_YB\n`);
+        evts.push(`#RS_YB`);
         for(let y = 0; y < 20; y++) {
             for(let x = 0; x < 25; x++) {
                 evts.push(`#MV_CA\ntx:${x * 15 + 7},ty:${y * 12 + 5},t:0,s:1,`);
