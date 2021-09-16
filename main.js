@@ -81,7 +81,7 @@
                       {data} = imgData;
                 for(let i = 0; i < data.length; i += 4) {
                     const _x = x * 15 + (i >> 2) % 15,
-                          _y = y * 12 + (i >> 2) / 12 | 0,
+                          _y = y * 12 + ((i >> 2) / 12 | 0),
                           output = getSprite(...data.slice(i, i + 3), inputType());
                     if(!output) throw msg('getSprite is err', true);
                     yuka[_y][_x] = output[3];
