@@ -16,7 +16,7 @@
     ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
     $('<span>').appendTo(head).text('映写機');
     const addBtn = (h, ttl, func) => $('<button>').appendTo(h).text(ttl).on('click', func);
-    const msg = (()=>{
+    const msg = (() => {
         const elm = $('<div>').appendTo(body);
         return (str, isError) => $('<span>').appendTo(elm.empty()).text(str).css({
             color: isError ? 'red' : 'blue',
@@ -82,8 +82,9 @@
                     const _x = (i >> 2) % width,
                           _y = (i >> 2) / 12 | 0,
                           output = getSprite(...data.slice(i, i + 3), inputType());
+                    if(!output) throw msg('getSprite is err', true);
                     yuka[y + _y][x + _x] = output[3];
-                    mono[y + _y][x + _x] = output[4];
+                    if(output[4]) mono[y + _y][x + _x] = output[4];
                 }
                 await dialog(`${now}/500`);
             }
