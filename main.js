@@ -35,7 +35,7 @@
     }).on('change', ({target}) => {
         video.src = URL.createObjectURL(target.files);
     });
-    const video = $('<video>').appendTo(body);
+    const video = $('<video>').appendTo(body.append('<br>')).get(0);
     const limit100 = rpgen3.addInputBool(body, {
         label: '100制限',
         save: true,
@@ -45,7 +45,7 @@
         label: '高さ12',
         save: true
     });
-    const inputFPS = rpgen3.addInputNumber(body, {
+    const inputFPS = rpgen3.addInputNum(body, {
         label: 'FPS',
         save: true,
         min: 1,
@@ -84,7 +84,7 @@
     const getColor = ([r, g, b, a]) => {
         return 45;
     };
-    const inputDelay = rpgen3.addInputNumber(body, {
+    const inputDelay = rpgen3.addInputNum(body, {
         label: '遅延修正[ms]',
         save: true,
         min: 0,
