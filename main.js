@@ -47,6 +47,11 @@
         max: 60,
         value: 8
     });
+    const limit300 = rpgen3.addInputBool(body, {
+        label: '300マスまで',
+        save: true,
+        value: true
+    });
     const inputType = rpgen3.addSelect(body, {
         label: '色比較アルゴリズム',
         save: true,
@@ -62,6 +67,7 @@
         color: 'white',
         backgroundColor: 'red'
     });
+    let _w, _h;
     const main = async () => {
         foot.empty();
         video.muted = true;
@@ -71,10 +77,19 @@
               ctx = cv.get(0).getContext('2d'),
               yuka = [...new Array(300)].map(v => [...new Array(300)]),
               mono = [...new Array(300)].map(v => [...new Array(300)]);
-        for(let y = 0; y < 25; y++) {
-            for(let x = 0; x < 20; x++) {
-                const now = x + y * 20;
-                video.currentTime = 1 / inputFPS * now;
+        if(limit300()) {
+            _w = 20;
+            _h = 25;
+        }
+        else {
+            const len = video.duration * inputFPS;
+            _w = _h = (Math.sqrt(len / 3) + 1 | 0) ** 2;
+        }
+        for(let y = 0; y < _h; y++) {
+            for(let x = 0; x < _w; x++) {
+                const now = x + y * _w,
+                      next = 1 / inputFPS * now;
+                video.currentTime = next;
                 await sleep(30);
                 ctx.drawImage(video, 0, 0, width, height);
                 const imgData = ctx.getImageData(0, 0, width, height),
@@ -87,7 +102,7 @@
                     yuka[_y][_x] = output[3];
                     if(output[4]) mono[_y][_x] = output[4];
                 }
-                await dialog(`${now}/500`);
+                await dialog(`${now}/${_w * _h}`);
             }
         }
         mono[7][3] = (mono[7][3] || 45) + 'C';
@@ -112,7 +127,7 @@
         const wait = (1 / inputFPS * 1000 | 0) - inputDelay,
               evts = [];
         evts.push(`#MV_CA\ntx:7,ty:5,t:0,s:1,`);
-        evts.push(`#MV_PA\ntx:300,ty:300,t:0,n:1,s:1,`);
+        evts.push(`#MV_PA\ntx:9999,ty:9999,t:0,n:1,s:1,`);
         evts.push(`#CH_YB\nv:FtutLA63Cp8,`);
         evts.push(`#WAIT\nt:3000,`);
         evts.push(`#PS_YB`);
@@ -120,8 +135,8 @@
         evts.push(`#SK_YB\ns:0,`);
         evts.push(`#WAIT\nt:500,`);
         evts.push(`#RS_YB`);
-        for(let y = 0; y < 20; y++) {
-            for(let x = 0; x < 25; x++) {
+        for(let y = 0; y < _h; y++) {
+            for(let x = 0; x < _w; x++) {
                 evts.push(`#MV_CA\ntx:${x * 15 + 7},ty:${y * 12 + 5},t:0,s:1,`);
                 if(wait > 0) evts.push(`#WAIT\nt:${wait},`);
             }
