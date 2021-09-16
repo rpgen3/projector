@@ -108,7 +108,7 @@
         backgroundColor: 'red'
     });
     const output = async () => {
-        const wait = 1 / inputFPS - inputDelay,
+        const wait = 1 / inputFPS * 1000 | 0 - inputDelay,
               evts = [];
         evts.push(`#MV_CA\ntx:7,ty:5,t:0,s:1,`);
         evts.push(`#MV_PA\ntx:300,ty:300,t:0,n:1,s:1,`);
