@@ -38,7 +38,8 @@
     const video = $('<video>').appendTo(body.append('<br>')).get(0);
     const is12 = rpgen3.addInputBool(body, {
         label: '高さ12',
-        save: true
+        save: true,
+        value: true
     });
     const inputFPS = rpgen3.addInputNum(body, {
         label: 'FPS',
@@ -71,12 +72,6 @@
     const main = async () => {
         foot.empty();
         video.muted = true;
-        const width = 15,
-              height = is12 ? 12 : 11,
-              cv = $('<canvas>').prop({width, height}),
-              ctx = cv.get(0).getContext('2d'),
-              yuka = [...new Array(300)].map(v => [...new Array(300)]),
-              mono = [...new Array(300)].map(v => [...new Array(300)]);
         if(limit300()) {
             _w = 20;
             _h = 25;
@@ -85,20 +80,26 @@
             const len = video.duration * inputFPS;
             _w = _h = (Math.sqrt(len) + 1 | 0) ** 2;
         }
+        const width = 15,
+              height = is12() ? 12 : 11,
+              cv = $('<canvas>').prop({width, height}),
+              ctx = cv.get(0).getContext('2d'),
+              yuka = [...new Array(_h * 12)].map(v => [...new Array(_w * 15)]),
+              mono = [...new Array(_h * 12)].map(v => [...new Array(_w * 15)]);
         for(let y = 0; y < _h; y++) {
             for(let x = 0; x < _w; x++) {
-                const now = x + y * _w,
-                      next = 1 / inputFPS * now;
-                video.currentTime = next;
+                const now = x + y * _w;
+                video.currentTime = 1 / inputFPS * now;
                 await sleep(30);
                 ctx.drawImage(video, 0, 0, width, height);
                 const imgData = ctx.getImageData(0, 0, width, height),
                       {data} = imgData;
                 for(let i = 0; i < data.length; i += 4) {
                     const _x = x * 15 + (i >> 2) % 15,
-                          _y = y * 12 + ((i >> 2) / 12 | 0),
+                          _y = y * 12 + ((i >> 2) / 15 | 0),
                           output = getSprite(...data.slice(i, i + 3), inputType());
                     if(!output) throw msg('getSprite is err', true);
+                    if(yuka[_y] == void 0) console.log(y, x, _y, _x);
                     yuka[_y][_x] = output[3];
                     if(output[4]) mono[_y][_x] = output[4];
                 }
