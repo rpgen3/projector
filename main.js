@@ -14,7 +14,6 @@
         'input',
         'css'
     ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
-    const {set} = await import('https://rpgen3.github.io/midi/export/rpgen.mjs');
     $('<span>').appendTo(head).text('映写機');
     const addBtn = (h, ttl, func) => $('<button>').appendTo(h).text(ttl).on('click', func);
     const msg = (()=>{
@@ -33,7 +32,8 @@
         type: 'file',
         accept: 'video/*'
     }).on('change', ({target}) => {
-        video.src = URL.createObjectURL(target.files);
+        video.controls = true;
+        video.src = URL.createObjectURL(target.files[0]);
     });
     const video = $('<video>').appendTo(body.append('<br>')).get(0);
     const limit100 = rpgen3.addInputBool(body, {
@@ -58,6 +58,7 @@
     });
     const main = async () => {
         foot.empty();
+        video.muted = true;
         const width = 15,
               height = is12 ? 12 : 11,
               cv = $('<canvas>').prop({width, height}),
@@ -65,7 +66,7 @@
               mass = [...new Array(300)].map(v => [...new Array(300)]);
         for(let y = 0; y < 20; y++) {
             for(let x = 0; x < 25; x++) {
-                const now = x * y;
+                const now = x + y * 20;
                 video.currentTime = 1 / inputFPS * now;
                 ctx.drawImage(video, 0, 0, width, height);
                 const imgData = ctx.getImageData(0, 0, width, height),
@@ -78,9 +79,10 @@
                 await dialog(`${now}/500`);
             }
         }
-        mass.map(v => v.join(' ')).join('\n');
+        floor = mass.map(v => v.join(' ')).join('\n');
         await dialog(`映写完了`);
     };
+    let floor;
     const getColor = ([r, g, b, a]) => {
         return 45;
     };
@@ -94,7 +96,7 @@
         color: 'white',
         backgroundColor: 'red'
     });
-    const output = () => {
+    const output = async () => {
         const wait = 1 / inputFPS - inputDelay,
               evts = [];
         evts.push(`#MV_CA\ntx:7,ty:5,t:0,s:1,`);
@@ -112,5 +114,21 @@
             }
             evts.push(`#WAIT\nt:${wait},`);
         }
+        const map = '\n'.repeat(7) + ' '.repeat(3) + '45C';
+        const mapData = [
+            await(await fetch('data.txt')).text(),
+            `#FLOOR\n${floor}#END`,
+            `#MAP\n${map}#END`,
+            new rpgen.FullEvent().make(['#CH_PH\np:0,x:0,y:0,'], 3, 7),
+            new rpgen.FullEvent(10).make(evts)
+        ].join('\n\n');
+        rpgen3.addInputStr(foot.empty(),{
+            value: rpgen.set(mapData),
+            copy: true
+        });
     };
+    const rpgen = await Promise.all([
+        './export/rpgen.mjs',
+        './export/fullEvent.mjs'
+    ].map(v=>import(v))).then(v => Object.assign({},...v));
 })();
