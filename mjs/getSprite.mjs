@@ -46,7 +46,7 @@ for(const k in dic) {
     if(k === '2408') continue;
     for(const [i, v] of getKuro(r, g, b).entries()) add(v[0], v[1], v[2], k, kuro[i]);
     if(k === '85') continue;
-    for(const [i, v] of getKuro(r, g, b).entries()) add(v[0], v[1], v[2], k, siro[i]));
+    for(const [i, v] of getKuro(r, g, b).entries()) add(v[0], v[1], v[2], k, siro[i]);
 }
 export const getSprite = (r, g, b, type = 0) => {
     const code = getTrendCode(r, g, b);
