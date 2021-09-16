@@ -34,7 +34,7 @@ const dic = {
 };
 const obj = {};
 const add = (r, g, b, yuka, mono) => {
-    var code = getTrendCode(r,g,b);
+    const code = getTrendCode(r, g, b);
     if(!obj[code]) obj[code] = [];
     obj[code].push([r, g, b, yuka, mono]);
 };
