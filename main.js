@@ -83,7 +83,7 @@
         }
         else {
             const len = video.duration * inputFPS;
-            _w = _h = (Math.sqrt(len / 3) + 1 | 0) ** 2;
+            _w = _h = (Math.sqrt(len) + 1 | 0) ** 2;
         }
         for(let y = 0; y < _h; y++) {
             for(let x = 0; x < _w; x++) {
