@@ -62,10 +62,6 @@
         color: 'white',
         backgroundColor: 'red'
     });
-    const decimalRound = (n, digit = 0) => {
-        const rate = 10 ** digit;
-        return Math.round(n * rate) / rate;
-    };
     const main = async () => {
         foot.empty();
         video.muted = true;
@@ -77,8 +73,8 @@
               mono = [...new Array(300)].map(v => [...new Array(300)]);
         for(let y = 0; y < 20; y++) {
             for(let x = 0; x < 25; x++) {
-                const now = x + y * 20;
-                video.currentTime = decimalRound(1 / inputFPS * now, 3);
+                const now = x + y * 25;
+                video.currentTime = 1 / inputFPS * now;
                 ctx.drawImage(video, 0, 0, width, height);
                 const imgData = ctx.getImageData(0, 0, width, height),
                       {data} = imgData;
