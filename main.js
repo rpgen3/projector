@@ -71,9 +71,9 @@
               ctx = cv.get(0).getContext('2d'),
               yuka = [...new Array(300)].map(v => [...new Array(300)]),
               mono = [...new Array(300)].map(v => [...new Array(300)]);
-        for(let y = 0; y < 20; y++) {
-            for(let x = 0; x < 25; x++) {
-                const now = x + y * 25;
+        for(let y = 0; y < 25; y++) {
+            for(let x = 0; x < 20; x++) {
+                const now = x + y * 20;
                 video.currentTime = 1 / inputFPS * now;
                 await sleep(30);
                 ctx.drawImage(video, 0, 0, width, height);
