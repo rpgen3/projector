@@ -75,6 +75,7 @@
             for(let x = 0; x < 25; x++) {
                 const now = x + y * 25;
                 video.currentTime = 1 / inputFPS * now;
+                await sleep(30);
                 ctx.drawImage(video, 0, 0, width, height);
                 const imgData = ctx.getImageData(0, 0, width, height),
                       {data} = imgData;
@@ -108,7 +109,7 @@
         backgroundColor: 'red'
     });
     const output = async () => {
-        const wait = 1 / inputFPS * 1000 | 0 - inputDelay,
+        const wait = (1 / inputFPS * 1000 | 0) - inputDelay,
               evts = [];
         evts.push(`#MV_CA\ntx:7,ty:5,t:0,s:1,`);
         evts.push(`#MV_PA\ntx:300,ty:300,t:0,n:1,s:1,`);
@@ -122,7 +123,7 @@
         for(let y = 0; y < 20; y++) {
             for(let x = 0; x < 25; x++) {
                 evts.push(`#MV_CA\ntx:${x * 15 + 7},ty:${y * 12 + 5},t:0,s:1,`);
-                evts.push(`#WAIT\nt:${wait},`);
+                if(wait > 0) evts.push(`#WAIT\nt:${wait},`);
             }
         }
         const mapData = [
