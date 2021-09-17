@@ -62,7 +62,7 @@
             'L*a*b*表色系でのユークリッド距離による色差の計算' : 1,
             'CIEDE2000による色差の計算' : 0
         },
-        value: 0
+        value: 'CIEDE2000による色差の計算'
     });
     addBtn(body.append('<br>'), '映写開始', () => main()).css({
         color: 'white',
