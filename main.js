@@ -134,9 +134,7 @@
         evts.push(`#MV_CA\ntx:7,ty:5,t:0,s:1,`);
         evts.push(`#MV_PA\ntx:9999,ty:9999,t:0,n:1,s:1,`);
         evts.push(`#CH_YB\nv:${rpgen3.getParam(inputURL()).v},`);
-        evts.push(`#WAIT\nt:1000,`);
-        evts.push(`#PS_YB`);
-        evts.push(`#WAIT\nt:1000,`);
+        evts.push(`#WAIT\nt:2000,`);
         evts.push(`#PS_YB`);
         evts.push(`#WAIT\nt:1000,`);
         evts.push(`#PS_YB`);
