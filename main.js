@@ -12,7 +12,7 @@
           foot = $('<div>').appendTo(html);
     const rpgen3 = await importAll([
         'input',
-        'css'
+        'url'
     ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
     $('<span>').appendTo(head).text('映写機');
     const addBtn = (h, ttl, func) => $('<button>').appendTo(h).text(ttl).on('click', func);
@@ -119,6 +119,11 @@
         max: 100,
         value: 0
     });
+    const inputURL = rpgen3.addInputStr(body, {
+        label: '動画URL',
+        save: true,
+        value: 'https://www.youtube.com/watch?v=FtutLA63Cp8'
+    });
     addBtn(body.append('<br>'), '出力', () => output()).css({
         color: 'white',
         backgroundColor: 'red'
@@ -128,8 +133,8 @@
               evts = [];
         evts.push(`#MV_CA\ntx:7,ty:5,t:0,s:1,`);
         evts.push(`#MV_PA\ntx:9999,ty:9999,t:0,n:1,s:1,`);
-        evts.push(`#CH_YB\nv:FtutLA63Cp8,`);
-        evts.push(`#WAIT\nt:3000,`);
+        evts.push(`#CH_YB\nv:${rpgen3.getParam(inputURL()).v},`);
+        evts.push(`#WAIT\nt:4000,`);
         evts.push(`#PS_YB`);
         evts.push(`#WAIT\nt:500,`);
         evts.push(`#SK_YB\ns:0,`);
