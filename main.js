@@ -110,7 +110,7 @@
           video = $('<video>').appendTo(hVideo).get(0);
     const seek = x => new Promise(resolve => {
         const seeked = () => {
-            video.removeAddEventListener('seeked', seeked);
+            video.removeEventListener('seeked', seeked);
             resolve();
         };
         video.addEventListener('seeked', seeked);
