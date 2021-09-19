@@ -206,15 +206,22 @@
         g_floor = yuka.map(v => v.join(' ')).join('\n');
         g_map = mono.map(v => v.join(' ')).join('\n');
         await dialog(`映写完了`);
+        inputFix.elm.trigger('input');
     };
     let g_floor, g_map;
     const {getSprite} = await import('https://rpgen3.github.io/projector/mjs/getSprite.mjs');
+    const viewWait = $('<div>').appendTo(hVideo);
     const inputFix = rpgen3.addInputNum(hVideo, {
         label: '遅延修正[ms]',
         save: true,
         min: 0,
         max: 100,
         value: 0
+    });
+    const calcWait = () => (1 / inputFPS * 1000 | 0) - inputFix;
+    inputFix.elm.on('input', () => {
+        const wait = calcWait();
+        viewWait.text(wait >= 0 ? `${wait}ms delay` : 'no event');
     });
     const inputURL = rpgen3.addInputStr(hVideo, {
         label: '動画URL',
@@ -226,7 +233,7 @@
         backgroundColor: 'red'
     });
     const output = async () => {
-        const wait = (1 / inputFPS * 1000 | 0) - inputFix,
+        const wait = calcWait(),
               evts = [];
         evts.push(`#MV_CA\ntx:7,ty:5,t:0,s:1,`);
         evts.push(`#MV_PA\ntx:9999,ty:9999,t:0,n:1,s:1,`);
@@ -244,7 +251,7 @@
         for(let y = 0; y < _h; y++) {
             for(let x = 0; x < _w; x++) {
                 evts.push(`#MV_CA\ntx:${x * 15 + 7},ty:${y * 12 + 5},t:0,s:1,`);
-                if(wait > 0) evts.push(`#WAIT\nt:${wait},`);
+                if(wait >= 0) evts.push(`#WAIT\nt:${wait},`);
             }
         }
         const mapData = [
