@@ -125,6 +125,13 @@
         max: 60,
         value: 8
     });
+    const inputDelay = rpgen3.addInputNum(hVideo, {
+        label: '映写間隔[ms]',
+        save: true,
+        min: 30,
+        max: 300,
+        value: 100
+    });
     addBtn(hVideo.append('<br>'), '映写開始', () => main()).css({
         color: 'white',
         backgroundColor: 'red'
@@ -151,7 +158,7 @@
             for(let x = 0; x < _w; x++) {
                 const now = x + y * _w;
                 video.currentTime = 1 / inputFPS * now;
-                await sleep(30);
+                await sleep(inputDelay());
                 ctx.drawImage(video, 0, 0, width, height);
                 const imgData = ctx.getImageData(0, 0, width, height),
                       {data} = imgData;
@@ -173,7 +180,7 @@
     };
     let g_floor, g_map;
     const {getSprite} = await import('https://rpgen3.github.io/projector/mjs/getSprite.mjs');
-    const inputDelay = rpgen3.addInputNum(hVideo, {
+    const inputFix = rpgen3.addInputNum(hVideo, {
         label: '遅延修正[ms]',
         save: true,
         min: 0,
@@ -190,7 +197,7 @@
         backgroundColor: 'red'
     });
     const output = async () => {
-        const wait = (1 / inputFPS * 1000 | 0) - inputDelay,
+        const wait = (1 / inputFPS * 1000 | 0) - inputFix,
               evts = [];
         evts.push(`#MV_CA\ntx:7,ty:5,t:0,s:1,`);
         evts.push(`#MV_PA\ntx:9999,ty:9999,t:0,n:1,s:1,`);
