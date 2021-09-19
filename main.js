@@ -40,8 +40,8 @@
             hImage.show();
         }
         else if(type.includes('video')) {
-            video.onload = () => {
-                fVideo.width(video.width).height(video.height);
+            video.onloadedmetadata = () => {
+                fVideo.width(video.videoWidth).height(video.videoHeight);
                 hVideo.show();
             };
             video.controls = true;
