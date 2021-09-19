@@ -52,7 +52,7 @@ export const getSprite = (r, g, b, type = 0) => {
     const code = getTrendCode(r, g, b);
     if(!obj[code]) throw 'missing dic';
     let min = 1, output = null;
-    for(const [i, v] of obj[code].entries()) {
+    for(const v of obj[code]) {
         const dif = diffColor([r, g, b], [v[0], v[1], v[2]], type);
         if(min < dif) continue;
         min = dif;
