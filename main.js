@@ -40,12 +40,12 @@
             hImage.show();
         }
         else if(type.includes('video')) {
-            video.controls = true;
-            video.src = URL.createObjectURL(file);
-            hVideo.show();
             video.onload = () => {
                 fVideo.width(video.width).height(video.height);
+                hVideo.show();
             };
+            video.controls = true;
+            video.src = URL.createObjectURL(file);
         }
         foot.empty();
     });
