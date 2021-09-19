@@ -108,6 +108,14 @@
     // 動画処理
     const hVideo = $('<div>').appendTo(body).hide(),
           video = $('<video>').appendTo(hVideo).get(0);
+    const seek = x => new Promise(resolve => {
+        const seeked = () => {
+            video.removeAddEventListener('seeked', seeked);
+            resolve();
+        };
+        video.addEventListener('seeked', seeked);
+        video.currentTime = x;
+    });
     const is12 = rpgen3.addInputBool(hVideo, {
         label: '高さ12',
         save: true,
@@ -124,13 +132,6 @@
         min: 1,
         max: 60,
         value: 8
-    });
-    const inputDelay = rpgen3.addInputNum(hVideo, {
-        label: '映写間隔[ms]',
-        save: true,
-        min: 30,
-        max: 300,
-        value: 100
     });
     addBtn(hVideo.append('<br>'), '映写開始', () => main()).css({
         color: 'white',
@@ -157,8 +158,7 @@
         for(let y = 0; y < _h; y++) {
             for(let x = 0; x < _w; x++) {
                 const now = x + y * _w;
-                video.currentTime = 1 / inputFPS * now;
-                await sleep(inputDelay());
+                await seek(1 / inputFPS * now);
                 ctx.drawImage(video, 0, 0, width, height);
                 const imgData = ctx.getImageData(0, 0, width, height),
                       {data} = imgData;
