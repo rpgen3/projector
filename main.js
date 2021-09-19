@@ -58,8 +58,8 @@
         value: 'CIEDE2000による色差の計算'
     });
     // 画像処理
-    const hImage = $('<div>').appendTo(body).hide();
-    const image = $('<img>').appendTo(hImage).get(0);
+    const hImage = $('<div>').appendTo(body).hide(),
+          image = $('<img>').appendTo(hImage).get(0);
     const inputWidth = rpgen3.addInputNum(hImage, {
         label: '幅',
         save: true,
@@ -82,7 +82,7 @@
               ctx = cv.get(0).getContext('2d');
         ctx.drawImage(image, 0, 0, width, height, 0, 0, w, h);
         const yuka = [...new Array(h)].map(() => [...new Array(w)]),
-              mono = yuka.slice().map(v => v.slice());
+              mono = yuka.map(v => v.slice());
         const imgData = ctx.getImageData(0, 0, width, height),
               {data} = imgData;
         for(let i = 0; i < data.length; i += 4) {
@@ -106,8 +106,8 @@
         });
     };
     // 動画処理
-    const hVideo = $('<div>').appendTo(body).hide();
-    const video = $('<video>').appendTo(hVideo).get(0);
+    const hVideo = $('<div>').appendTo(body).hide(),
+          video = $('<video>').appendTo(hVideo).get(0);
     const is12 = rpgen3.addInputBool(hVideo, {
         label: '高さ12',
         save: true,
@@ -146,7 +146,7 @@
               cv = $('<canvas>').prop({width, height}),
               ctx = cv.get(0).getContext('2d'),
               yuka = [...new Array(_h * 12)].map(() => [...new Array(_w * 15)]),
-              mono = yuka.slice().map(v => v.slice());
+              mono = yuka.map(v => v.slice());
         for(let y = 0; y < _h; y++) {
             for(let x = 0; x < _w; x++) {
                 const now = x + y * _w;
