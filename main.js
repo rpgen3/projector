@@ -43,6 +43,9 @@
             video.controls = true;
             video.src = URL.createObjectURL(file);
             hVideo.show();
+            video.onload = () => {
+                fVideo.width(video.width).height(video.height);
+            };
         }
         foot.empty();
     });
@@ -106,8 +109,15 @@
         });
     };
     // 動画処理
-    const hVideo = $('<div>').appendTo(body).hide(),
-          video = $('<video>').appendTo(hVideo).get(0);
+    const hVideo = $('<div>').appendTo(body).hide();
+    const fVideo = $('<div>').appendTo(hVideo).css({
+        position: 'relative'
+    });
+    const video = $('<video>').appendTo(fVideo).get(0);
+    const cover = $('<div>').appendTo(fVideo).css({
+        position: 'absolute',
+        backgroundColor: 'rgba(255, 0, 0, 0.5)'
+    });
     const seek = x => new Promise(resolve => {
         const seeked = () => {
             video.removeEventListener('seeked', seeked);
@@ -115,6 +125,23 @@
         };
         video.addEventListener('seeked', seeked);
         video.currentTime = x;
+    });
+    const inputTrim = rpgen3.addInputStr(hVideo, {
+        label: 'トリミング(x,y,w,h)'
+    });
+    const getTrim = () => {
+        const m = inputTrim().match(/[0-9]+/g);
+        return m && m.length === 4 ? m.map(Number) : false;
+    };
+    inputTrim.elm.on('input', () => {
+        const t = getTrim();
+        if(t) cover.css({
+            left: t[0],
+            top: t[1],
+            width: t[2],
+            height: t[3]
+        }).show();
+        else cover.hide();
     });
     const is12 = rpgen3.addInputBool(hVideo, {
         label: '高さ12',
@@ -154,12 +181,14 @@
               cv = $('<canvas>').prop({width, height}),
               ctx = cv.get(0).getContext('2d'),
               yuka = [...new Array(_h * 12)].map(() => [...new Array(_w * 15)]),
-              mono = yuka.map(v => v.slice());
+              mono = yuka.map(v => v.slice()),
+              t = getTrim();
         for(let y = 0; y < _h; y++) {
             for(let x = 0; x < _w; x++) {
                 const now = x + y * _w;
                 await seek(1 / inputFPS * now);
-                ctx.drawImage(video, 0, 0, width, height);
+                if(t) ctx.drawImage(video, t[0], t[1], t[2], t[3], 0, 0, width, height);
+                else ctx.drawImage(video, 0, 0, width, height);
                 const imgData = ctx.getImageData(0, 0, width, height),
                       {data} = imgData;
                 for(let i = 0; i < data.length; i += 4) {
