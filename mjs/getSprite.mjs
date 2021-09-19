@@ -54,9 +54,10 @@ export const getSprite = (r, g, b, type = 0) => {
     let min = 1, output = null;
     for(const v of obj[code]) {
         const dif = diffColor([r, g, b], [v[0], v[1], v[2]], type);
-        if(min < dif) continue;
-        min = dif;
-        output = v;
+        if(min > dif) {
+            min = dif;
+            output = v;
+        }
     }
     return output;
 };
