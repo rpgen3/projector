@@ -44,6 +44,7 @@
             video.src = URL.createObjectURL(file);
             hVideo.show();
         }
+        foot.empty();
     });
     const inputType = rpgen3.addSelect(body, {
         label: '色比較アルゴリズム',
@@ -66,7 +67,7 @@
         max: 300,
         value: 60
     });
-    addBtn(hImage.append('<br>'), '映写開始', () => main2()).css({
+    addBtn(hImage.append('<br>'), '出力', () => main2()).css({
         color: 'white',
         backgroundColor: 'red'
     });
@@ -92,10 +93,12 @@
             yuka[y][x] = output[3];
             if(output[4]) mono[y][x] = output[4];
         }
+        const floor = yuka.map(v => v.join(' ')).join('\n'),
+              map = mono.map(v => v.join(' ')).join('\n');
         const mapData = [
             await(await fetch('data.txt')).text(),
-            `#FLOOR\n${g_floor}#END`,
-            `#MAP\n${g_map}#END`
+            `#FLOOR\n${floor}#END`,
+            `#MAP\n${map}#END`
         ].join('\n\n');
         rpgen3.addInputStr(foot.empty(),{
             value: rpgen.set(mapData),
