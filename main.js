@@ -30,28 +30,20 @@
     };
     $('<input>').appendTo(body).prop({
         type: 'file',
-        accept: 'video/*'
+        accept: 'image/*,video/*'
     }).on('change', ({target}) => {
-        video.controls = true;
-        video.src = URL.createObjectURL(target.files[0]);
-    });
-    const video = $('<video>').appendTo(body.append('<br>')).get(0);
-    const is12 = rpgen3.addInputBool(body, {
-        label: '高さ12',
-        save: true,
-        value: true
-    });
-    const inputFPS = rpgen3.addInputNum(body, {
-        label: 'FPS',
-        save: true,
-        min: 1,
-        max: 60,
-        value: 8
-    });
-    const limit300 = rpgen3.addInputBool(body, {
-        label: '300マスまで',
-        save: true,
-        value: true
+        const file = target.files[0],
+              {type} = file;
+        hImage.add(hVideo).hide();
+        if(type.includes('image')) {
+            image.src = URL.createObjectURL(file);
+            hImage.show();
+        }
+        else if(type.includes('video')) {
+            video.controls = true;
+            video.src = URL.createObjectURL(file);
+            hVideo.show();
+        }
     });
     const inputType = rpgen3.addSelect(body, {
         label: '色比較アルゴリズム',
@@ -64,7 +56,73 @@
         },
         value: 'CIEDE2000による色差の計算'
     });
-    addBtn(body.append('<br>'), '映写開始', () => main()).css({
+    // 画像処理
+    const hImage = $('<div>').appendTo(body).hide();
+    const image = $('<img>').appendTo(hImage).get(0);
+    const inputWidth = rpgen3.addInputNum(hImage, {
+        label: '幅',
+        save: true,
+        min: 16,
+        max: 300,
+        value: 60
+    });
+    addBtn(hImage.append('<br>'), '映写開始', () => main2()).css({
+        color: 'white',
+        backgroundColor: 'red'
+    });
+    const main2 = async () => {
+        const {width, height} = image,
+              w = inputWidth(),
+              h = w * (height / width) | 0,
+              cv = $('<canvas>').prop({
+                  width: w,
+                  height: h
+              }),
+              ctx = cv.get(0).getContext('2d');
+        ctx.drawImage(image, 0, 0, width, height, 0, 0, w, h);
+        const yuka = [...new Array(h)].map(() => [...new Array(w)]),
+              mono = yuka.slice().map(v => v.slice());
+        const imgData = ctx.getImageData(0, 0, width, height),
+              {data} = imgData;
+        for(let i = 0; i < data.length; i += 4) {
+            const x = (i >> 2) % w,
+                  y = (i >> 2) / w | 0,
+                  output = getSprite(...data.slice(i, i + 3), inputType());
+            if(!output) throw msg('getSprite is err', true);
+            yuka[y][x] = output[3];
+            if(output[4]) mono[y][x] = output[4];
+        }
+        const mapData = [
+            await(await fetch('data.txt')).text(),
+            `#FLOOR\n${g_floor}#END`,
+            `#MAP\n${g_map}#END`
+        ].join('\n\n');
+        rpgen3.addInputStr(foot.empty(),{
+            value: rpgen.set(mapData),
+            copy: true
+        });
+    };
+    // 動画処理
+    const hVideo = $('<div>').appendTo(body).hide();
+    const video = $('<video>').appendTo(hVideo).get(0);
+    const is12 = rpgen3.addInputBool(hVideo, {
+        label: '高さ12',
+        save: true,
+        value: true
+    });
+    const limit300 = rpgen3.addInputBool(hVideo, {
+        label: '300マスまで',
+        save: true,
+        value: true
+    });
+    const inputFPS = rpgen3.addInputNum(hVideo, {
+        label: 'FPS',
+        save: true,
+        min: 1,
+        max: 60,
+        value: 8
+    });
+    addBtn(hVideo.append('<br>'), '映写開始', () => main()).css({
         color: 'white',
         backgroundColor: 'red'
     });
@@ -84,8 +142,8 @@
               height = is12() ? 12 : 11,
               cv = $('<canvas>').prop({width, height}),
               ctx = cv.get(0).getContext('2d'),
-              yuka = [...new Array(_h * 12)].map(v => [...new Array(_w * 15)]),
-              mono = [...new Array(_h * 12)].map(v => [...new Array(_w * 15)]);
+              yuka = [...new Array(_h * 12)].map(() => [...new Array(_w * 15)]),
+              mono = yuka.slice().map(v => v.slice());
         for(let y = 0; y < _h; y++) {
             for(let x = 0; x < _w; x++) {
                 const now = x + y * _w;
@@ -112,19 +170,19 @@
     };
     let g_floor, g_map;
     const {getSprite} = await import('https://rpgen3.github.io/projector/mjs/getSprite.mjs');
-    const inputDelay = rpgen3.addInputNum(body, {
+    const inputDelay = rpgen3.addInputNum(hVideo, {
         label: '遅延修正[ms]',
         save: true,
         min: 0,
         max: 100,
         value: 0
     });
-    const inputURL = rpgen3.addInputStr(body, {
+    const inputURL = rpgen3.addInputStr(hVideo, {
         label: '動画URL',
         save: true,
         value: 'https://www.youtube.com/watch?v=FtutLA63Cp8'
     });
-    addBtn(body.append('<br>'), '出力', () => output()).css({
+    addBtn(hVideo.append('<br>'), '出力', () => output()).css({
         color: 'white',
         backgroundColor: 'red'
     });
