@@ -111,7 +111,8 @@
     // 動画処理
     const hVideo = $('<div>').appendTo(body).hide();
     const fVideo = $('<div>').appendTo(hVideo).css({
-        position: 'relative'
+        position: 'relative',
+        display: 'inline-block'
     });
     const video = $('<video>').appendTo(fVideo).get(0);
     const cover = $('<div>').appendTo(fVideo).css({
