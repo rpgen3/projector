@@ -29,9 +29,12 @@
         await sleep(30);
     };
     // 画像処理
-    const image = $('<img>').prop({src: 'https://i.imgur.com/UPFOx4N.png'}).get(0);
+    const image = $('<img>').prop({
+        src: 'https://i.imgur.com/UPFOx4N.png',
+        crossOrigin: 'anonymous'
+    }).get(0);
     const inputType = rpgen3.addSelect(body, {
-        label: '代表色の抽出',
+        label: '算出方法',
         list: {
             '平均値': 0,
             '中央値': 1,
@@ -50,16 +53,16 @@
         const unit = 16,
               m = new Map,
               same = [];
-        for(let y = 0; y < height; y += unit) {
-            for(let x = 0; x < width; x += unit) {
-                const {data} = ctx.getImageData(x, y, unit, unit),
+        for(const y of [...new Array(height / unit).keys()]) {
+            for(const x of [...new Array(width / unit).keys()]) {
+                const {data} = ctx.getImageData(x * unit, y * unit, unit, unit),
                       ar = [];
                 for(let i = 0; i < data.length; i += 4) {
                     const [r, g, b, a] = data.slice(i, i + 4);
                     ar.push([r, g, b].map(v => v * (a / 255) | 0));
                 };
                 const ex = (() => {
-                    switch(inputType) {
+                    switch(inputType()) {
                         case 0: return getAve;
                         case 1: return getMed;
                         case 2: return getMod;
@@ -74,6 +77,7 @@
         }
         rpgen3.addInputStr(foot.empty(),{
             value: [...m].map(([k, v]) => `${k} #${v}`).join('\n'),
+            textarea: true,
             copy: true
         });
     };
