@@ -101,6 +101,7 @@
             const x = (i >> 2) % w,
                   y = (i >> 2) / w | 0,
                   [a, b] = getSprite(data.slice(i, i + 3));
+            if(y === h) break;
             yuka[y][x] = a;
             if(b) mono[y][x] = b;
         }
@@ -204,6 +205,7 @@
                     const _x = x * 15 + (i >> 2) % 15,
                           _y = y * 12 + ((i >> 2) / 15 | 0),
                           [a, b] = getSprite(data.slice(i, i + 3));
+                    if(y === height) break;
                     yuka[_y][_x] = a;
                     if(b) mono[_y][_x] = b;
                 }
