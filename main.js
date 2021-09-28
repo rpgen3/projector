@@ -223,7 +223,7 @@
         const m = inputMosaic();
         const _ = (m === -1 ? rpgen4.getSprite : rpgen4.getSpriteDefault)(...rgb, inputType(), m);
         if(!_) throw msg('getSprite is err', true);
-        return _.slice(3, 5);
+        return m === -1 ? _.slice(3, 5) : [_];
     };
     const viewWait = $('<div>').appendTo(hVideo);
     const inputFix = rpgen3.addInputNum(hVideo, {
