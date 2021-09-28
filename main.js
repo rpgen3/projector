@@ -102,7 +102,7 @@
                   [a, b] = getSprite(data.slice(i, i + 3));
             if(a) yuka[y][x] = a;
             if(b) mono[y][x] = b;
-            await dialog(`${i}/${data.length}`);
+            if(x === 0) await dialog(`${i}/${data.length}`);
         }
         await dialog(`映写完了`);
         const floor = yuka.map(v => v.join(' ')).join('\n'),
@@ -222,8 +222,8 @@
         'getSpriteDefault'
     ].map(v=>`https://rpgen3.github.io/projector/mjs/${v}.mjs`));
     const getSprite = rgb => {
-        const m = inputMosaic();
-        const _ = (m === -1 ? rpgen4.getSprite : rpgen4.getSpriteDefault)(...rgb, inputType(), m);
+        const m = inputMosaic(),
+              _ = (m === -1 ? rpgen4.getSprite : rpgen4.getSpriteDefault)(...rgb, inputType(), m);
         if(!_) throw msg('getSprite is err', true);
         return m === -1 ? _.slice(3, 5) : [null, _];
     };
