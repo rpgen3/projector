@@ -220,8 +220,8 @@
         'getSpriteDefault'
     ].map(v=>`https://rpgen3.github.io/projector/mjs/${v}.mjs`));
     const getSprite = rgb => {
-        const m = inputMosaic();
-        const _ = (m === -1 ? rpgen4.getSprite : rpgen4.getSpriteDefault)(...rgb, inputType(), m);
+        const m = inputMosaic(),
+              _ = (m === -1 ? rpgen4.getSprite : rpgen4.getSpriteDefault)(...rgb, inputType(), m);
         if(!_) throw msg('getSprite is err', true);
         return m === -1 ? _.slice(3, 5) : [_];
     };
