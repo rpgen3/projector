@@ -51,7 +51,7 @@ export const getSprite = (r, g, b, type = 0) => {
     if(!obj[code]) throw 'missing dic';
     let min = 1, output = null;
     for(const v of obj[code]) {
-        const dif = diffColor([r, g, b], [v[0], v[1], v[2]], type);
+        const dif = diffColor([r, g, b], v, type);
         if(min > dif) {
             min = dif;
             output = v;
