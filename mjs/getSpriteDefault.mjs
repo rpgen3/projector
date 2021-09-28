@@ -31,7 +31,7 @@ const add = (map, r, g, b, yuka) => {
     if(!map.has(code)) map.set(code, []);
     map.get(code).push([r, g, b, yuka]);
 };
-for(const [i, map] of obj.entries()) for(const [k, v] of dic[i]) add(map, ...v, k);
+for(const [i, map] of list.entries()) for(const [k, v] of dic[i]) add(map, ...v, k);
 export const getSpriteDefault = (r, g, b, type = 0, ex = 0) => {
     const m = list[ex],
           code = getTrendCode(r, g, b);
