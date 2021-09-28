@@ -60,6 +60,15 @@
         },
         value: 'CIEDE2000による色差の計算'
     });
+    const inputMosaic = rpgen3.addSelect(body, {
+        label: 'モザイクアート',
+        list: {
+            'やらない': -1,
+            '平均値': 0,
+            '中央値': 1,
+            '最頻値': 2
+        }
+    });
     // 画像処理
     const hImage = $('<div>').appendTo(body).hide(),
           image = $('<img>').appendTo(hImage).get(0);
@@ -91,10 +100,9 @@
         for(let i = 0; i < data.length; i += 4) {
             const x = (i >> 2) % w,
                   y = (i >> 2) / w | 0,
-                  output = getSprite(...data.slice(i, i + 3), inputType());
-            if(!output) throw msg('getSprite is err', true);
-            yuka[y][x] = output[3];
-            if(output[4]) mono[y][x] = output[4];
+                  [a, b] = getSprite(data.slice(i, i + 3));
+            yuka[y][x] = a;
+            if(b) mono[y][x] = b;
         }
         const floor = yuka.map(v => v.join(' ')).join('\n'),
               map = mono.map(v => v.join(' ')).join('\n');
@@ -195,10 +203,9 @@
                 for(let i = 0; i < data.length; i += 4) {
                     const _x = x * 15 + (i >> 2) % 15,
                           _y = y * 12 + ((i >> 2) / 15 | 0),
-                          output = getSprite(...data.slice(i, i + 3), inputType());
-                    if(!output) throw msg('getSprite is err', true);
-                    yuka[_y][_x] = output[3];
-                    if(output[4]) mono[_y][_x] = output[4];
+                          [a, b] = getSprite(data.slice(i, i + 3));
+                    yuka[_y][_x] = a;
+                    if(b) mono[_y][_x] = b;
                 }
                 await dialog(`${now}/${_w * _h}`);
             }
@@ -210,7 +217,16 @@
         inputFix.elm.trigger('input');
     };
     let g_floor, g_map;
-    const {getSprite} = await import('https://rpgen3.github.io/projector/mjs/getSprite.mjs');
+    const rpgen4 = await importAll([
+        'getSprite',
+        'getSpriteDefault'
+    ].map(v=>`https://rpgen3.github.io/projector/mjs/${v}.mjs`));
+    const getSprite = rgb => {
+        const m = inputMosaic();
+        const _ = (m === -1 ? rpgen4.getSprite : rpgen4.getSpriteDefault)(...rgb, inputType(), m);
+        if(!_) throw msg('getSprite is err', true);
+        return _.slice(3, 5);
+    };
     const viewWait = $('<div>').appendTo(hVideo);
     const inputFix = rpgen3.addInputNum(hVideo, {
         label: '遅延修正[ms]',
