@@ -31,7 +31,7 @@ const add = (r, g, b, yuka) => {
     if(!obj[code]) obj[code] = [];
     obj[code].push([r, g, b, yuka]);
 };
-for(const [i, m] of obj) for(const [k, v] of dic[i]) add(...v, k);
+for(const [i, m] of obj.entries()) for(const [k, v] of dic[i]) add(...v, k);
 export const getSpriteDefault = (r, g, b, type = 0, ex = 0) => {
     const code = getTrendCode(r, g, b);
     if(!obj[ex][code]) throw 'missing dic';
