@@ -71,7 +71,9 @@
     });
     // 画像処理
     const hImage = $('<div>').appendTo(body).hide(),
-          image = $('<img>').appendTo(hImage).get(0);
+          image = $('<img>').appendTo(hImage).css({
+              maxWidth:'90%'
+          }).get(0);
     const inputWidth = rpgen3.addInputNum(hImage, {
         label: '幅',
         save: true,
