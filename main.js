@@ -92,16 +92,14 @@
                   height: h
               }),
               ctx = cv.get(0).getContext('2d');
-        ctx.drawImage(image, 0, 0, width, height, 0, 0, w, h);
+        ctx.drawImage(image, 0, 0, w, h);
         const yuka = [...new Array(h)].map(() => [...new Array(w)]),
               mono = yuka.map(v => v.slice());
-        const imgData = ctx.getImageData(0, 0, width, height),
-              {data} = imgData;
+        const {data} = ctx.getImageData(0, 0, w, h);
         for(let i = 0; i < data.length; i += 4) {
             const x = (i >> 2) % w,
                   y = (i >> 2) / w | 0,
                   [a, b] = getSprite(data.slice(i, i + 3));
-            if(y === h) break;
             yuka[y][x] = a;
             if(b) mono[y][x] = b;
         }
@@ -199,13 +197,11 @@
                 await seek(1 / inputFPS * now);
                 if(t) ctx.drawImage(video, t[0], t[1], t[2], t[3], 0, 0, width, height);
                 else ctx.drawImage(video, 0, 0, width, height);
-                const imgData = ctx.getImageData(0, 0, width, height),
-                      {data} = imgData;
+                const {data} = ctx.getImageData(0, 0, width, height);
                 for(let i = 0; i < data.length; i += 4) {
                     const _x = x * 15 + (i >> 2) % 15,
                           _y = y * 12 + ((i >> 2) / 15 | 0),
                           [a, b] = getSprite(data.slice(i, i + 3));
-                    if(y === height) break;
                     yuka[_y][_x] = a;
                     if(b) mono[_y][_x] = b;
                 }
