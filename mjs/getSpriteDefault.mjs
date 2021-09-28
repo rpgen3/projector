@@ -12,7 +12,7 @@ const getTrendCode = (r, g, b) => {
     if(g > b) s += 'i';
     return s;
 };
-const dic = [
+const dic = await Promise.all([
     'average',
     'median',
     'mode'
@@ -24,7 +24,7 @@ const dic = [
         map.set(m[1], m[2].match(/.{2}/g).map(v => parseInt(v, 16)));
     }
     return map;
-});
+}));
 const list = dic.slice().map(v => new Map);
 const add = (map, r, g, b, yuka) => {
     const code = getTrendCode(r, g, b);
