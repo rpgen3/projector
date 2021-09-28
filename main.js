@@ -62,6 +62,7 @@
     });
     const inputMosaic = rpgen3.addSelect(body, {
         label: 'モザイクアート',
+        save: true,
         list: {
             'やらない': -1,
             '平均値': 0,
@@ -70,10 +71,10 @@
         }
     });
     // 画像処理
-    const hImage = $('<div>').appendTo(body).hide(),
-          image = $('<img>').appendTo(hImage).css({
-              maxWidth:'90%'
-          }).get(0);
+    const hImage = $('<div>').appendTo(body).hide();
+    const image = $('<img>').appendTo(hImage).css({
+        maxWidth:'90%'
+    }).get(0);
     const inputWidth = rpgen3.addInputNum(hImage, {
         label: '幅',
         save: true,
