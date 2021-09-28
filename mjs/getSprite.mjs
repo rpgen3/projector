@@ -39,14 +39,12 @@ const add = (r, g, b, yuka, mono) => {
     obj[code].push([r, g, b, yuka, mono]);
 };
 for(const k in dic) {
-    const r = dic[k][0],
-          g = dic[k][1],
-          b = dic[k][2];
-    add(r, g, b, k);
+    const rgb = dic[k];
+    add(...rgb, k);
     if(k === '2408') continue;
-    for(const [i, v] of getKuro(r, g, b).entries()) add(v[0], v[1], v[2], k, kuro[i]);
+    for(const [i, v] of getKuro(...rgb).entries()) add(...v, k, kuro[i]);
     if(k === '85') continue;
-    for(const [i, v] of getSiro(r, g, b).entries()) add(v[0], v[1], v[2], k, siro[i]);
+    for(const [i, v] of getSiro(...rgb).entries()) add(...v, k, siro[i]);
 }
 export const getSprite = (r, g, b, type = 0) => {
     const code = getTrendCode(r, g, b);
