@@ -12,7 +12,8 @@
           foot = $('<div>').appendTo(html);
     const rpgen3 = await importAll([
         'input',
-        'url'
+        'url',
+        'hankaku'
     ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
     $('<span>').appendTo(head).text('映写機');
     const addBtn = (h, ttl, func) => $('<button>').appendTo(h).text(ttl).on('click', func);
@@ -145,7 +146,7 @@
         label: 'トリミング(x,y,w,h)'
     });
     const getTrim = () => {
-        const m = inputTrim().match(/[0-9]+/g);
+        const m = rpgen3.toHan(inputTrim()).match(/[0-9]+/g);
         return m && m.length === 4 ? m.map(Number) : false;
     };
     inputTrim.elm.on('input', () => {
@@ -189,7 +190,7 @@
     const main = async () => {
         foot.empty();
         video.muted = true;
-        const [start, end] = [inputStart, inputEnd].map(v => v().replace(/[^0-9.]/g, '')).map(Number);
+        const [start, end] = [inputStart, inputEnd].map(v => rpgen3.toHan(v()).replace(/[^0-9.]/g, '')).map(Number);
         if([start, end].some(Number.isNaN)) throw msg('開始 or 終了時間 is err', true);
         if(limit300()) {
             _w = 20;
