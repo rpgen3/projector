@@ -186,12 +186,13 @@
         color: 'white',
         backgroundColor: 'red'
     });
-    let _w, _h;
+    let _w, _h, g_start;
     const main = async () => {
         foot.empty();
         video.muted = true;
         const [start, end] = [inputStart, inputEnd].map(v => rpgen3.toHan(v()).replace(/[^0-9.]/g, '')).map(Number);
         if([start, end].some(Number.isNaN)) throw msg('開始 or 終了時間 is err', true);
+        g_start = start;
         if(limit300()) {
             _w = 20;
             _h = 25;
@@ -276,7 +277,7 @@
         evts.push(`#WAIT\nt:1000,`);
         evts.push(`#PS_YB`);
         evts.push(`#WAIT\nt:500,`);
-        evts.push(`#SK_YB\ns:0,`);
+        evts.push(`#SK_YB\ns:${g_start},`);
         evts.push(`#WAIT\nt:500,`);
         evts.push(`#RS_YB`);
         for(let y = 0; y < _h; y++) {
