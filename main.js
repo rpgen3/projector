@@ -43,6 +43,8 @@
             video.onloadedmetadata = () => {
                 fVideo.width(video.videoWidth).height(video.videoHeight);
                 hVideo.show();
+                inputStart(0);
+                inputEnd(video.duration);
             };
             video.controls = true;
             video.src = URL.createObjectURL(file);
@@ -156,6 +158,12 @@
         }).show();
         else cover.hide();
     });
+    const inputStart = rpgen3.addInputStr(hVideo, {
+        label: '開始時間[sec]'
+    });
+    const inputEnd = rpgen3.addInputStr(hVideo, {
+        label: '終了時間[sec]'
+    });
     const is12 = rpgen3.addInputBool(hVideo, {
         label: '高さ12',
         save: true,
@@ -181,12 +189,14 @@
     const main = async () => {
         foot.empty();
         video.muted = true;
+        const [start, end] = [inputStart, inputEnd].map(v => v().replace(/[^0-9.]/g, '')).map(Number);
+        if([start, end].some(Number.isNaN)) throw msg('開始 or 終了時間 is err', true);
         if(limit300()) {
             _w = 20;
             _h = 25;
         }
         else {
-            const len = video.duration * inputFPS;
+            const len = (end - start) * inputFPS;
             _w = _h = Math.sqrt(len) + 1 | 0;
         }
         const width = 15,
@@ -199,7 +209,7 @@
         for(let y = 0; y < _h; y++) {
             for(let x = 0; x < _w; x++) {
                 const now = x + y * _w;
-                await seek(1 / inputFPS * now);
+                await seek(1 / inputFPS * now + start);
                 if(t) ctx.drawImage(video, t[0], t[1], t[2], t[3], 0, 0, width, height);
                 else ctx.drawImage(video, 0, 0, width, height);
                 const {data} = ctx.getImageData(0, 0, width, height);
@@ -274,6 +284,7 @@
                 if(wait >= 0) evts.push(`#WAIT\nt:${wait},`);
             }
         }
+        evts.push(`#PS_YB`);
         const mapData = [
             await(await fetch('data.txt')).text(),
             `#FLOOR\n${g_floor}#END`,
