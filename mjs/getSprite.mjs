@@ -32,9 +32,9 @@ const add = (r, g, b, yuka, mono) => {
 for(const [id, [r, g, b]] of colorsMap) {
     add(r, g, b, id);
     if(r === 0 && g === 0 && b === 0) continue;
-    for(const [i, v] of getKuro(...rgb).entries()) add(...v, id, kuro[i]);
+    for(const [i, v] of getKuro(r, g, b).entries()) add(...v, id, kuro[i]);
     if(r === 0xFF && g === 0xFF && b === 0xFF) continue;
-    for(const [i, v] of getSiro(...rgb).entries()) add(...v, id, siro[i]);
+    for(const [i, v] of getSiro(r, g, b).entries()) add(...v, id, siro[i]);
 }
 export const getSprite = (r, g, b, type = 0) => {
     const code = getTrendCode(r, g, b);
