@@ -16,41 +16,31 @@ const getTrendCode = (r, g, b) => {
     if(g > b) s += 'i';
     return s;
 };
-const dic = {
-    85 : [255, 255, 255],
-    2408 : [0, 0, 0],
-    86 : [255, 0, 0],
-    92 : [0, 255, 0],
-    87 : [0, 0, 255],
-    88 : [255, 255, 0],
-    93 : [0, 255, 255],
-    90 : [255, 0, 255],
-    28477 : [128, 255, 0],
-    28478 : [128, 0, 255],
-    28479 : [0, 128, 255],
-    28480 : [255, 128, 0],
-    28481 : [255, 0, 128],
-    28482 : [0, 255, 128],
-};
-const obj = {};
+const colorsMap = new Map;
+for(const s of (await(await fetch('https://rpgen3.github.io/projector/data/colors.txt')).text()).split('\n')) {
+    if(!s.includes('#')) continue;
+    const [a, b] = s.split(' '),
+          rgb = a.match(/[0-9A-F]{2}/g).map(v => parseInt(v,16));
+    colorsMap.set(b, rgb);
+}
+const trendMap = new Map;
 const add = (r, g, b, yuka, mono) => {
     const code = getTrendCode(r, g, b);
-    if(!obj[code]) obj[code] = [];
-    obj[code].push([r, g, b, yuka, mono]);
+    if(!trendMap.has(code)) trendMap.set(code, []);
+    trendMap.get(code).push([r, g, b, yuka, mono]);
 };
-for(const k in dic) {
-    const rgb = dic[k];
-    add(...rgb, k);
-    if(k === '2408') continue;
-    for(const [i, v] of getKuro(...rgb).entries()) add(...v, k, kuro[i]);
-    if(k === '85') continue;
-    for(const [i, v] of getSiro(...rgb).entries()) add(...v, k, siro[i]);
+for(const [id, [r, g, b]] of colorsMap) {
+    add(r, g, b, id);
+    if(r === 0 && g === 0 && b === 0) continue;
+    for(const [i, v] of getKuro(...rgb).entries()) add(...v, id, kuro[i]);
+    if(r === 0xFF && g === 0xFF && b === 0xFF) continue;
+    for(const [i, v] of getSiro(...rgb).entries()) add(...v, id, siro[i]);
 }
 export const getSprite = (r, g, b, type = 0) => {
     const code = getTrendCode(r, g, b);
-    if(!obj[code]) throw 'missing dic';
+    if(!obj.has(code)) throw 'missing dic';
     let min = 1, output = null;
-    for(const v of obj[code]) {
+    for(const v of obj.get(code)) {
         const dif = diffColor([r, g, b], v, type);
         if(min > dif) {
             min = dif;
