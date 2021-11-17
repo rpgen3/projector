@@ -38,9 +38,9 @@ for(const [id, [r, g, b]] of colorsMap) {
 }
 export const getSprite = (r, g, b, type = 0) => {
     const code = getTrendCode(r, g, b);
-    if(!obj.has(code)) throw 'missing dic';
+    if(!trendMap.has(code)) throw 'missing dic';
     let min = 1, output = null;
-    for(const v of obj.get(code)) {
+    for(const v of trendMap.get(code)) {
         const dif = diffColor([r, g, b], v, type);
         if(min > dif) {
             min = dif;
