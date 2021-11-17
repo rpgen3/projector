@@ -114,7 +114,7 @@
         const floor = yuka.map(v => v.join(' ')).join('\n'),
               map = mono.map(v => v.join(' ')).join('\n');
         const mapData = [
-            await(await fetch('data.txt')).text(),
+            await(await fetch('https://rpgen3.github.io/projector/data/map.txt')).text(),
             `#FLOOR\n${floor}#END`,
             `#MAP\n${map}#END`
         ].join('\n\n');
@@ -288,7 +288,7 @@
         }
         evts.push(`#PS_YB`);
         const mapData = [
-            await(await fetch('data.txt')).text(),
+            await(await fetch('https://rpgen3.github.io/projector/data/map.txt')).text(),
             `#FLOOR\n${g_floor}#END`,
             `#MAP\n${g_map}#END`,
             new rpgen.FullEvent().make(['#CH_PH\np:0,x:0,y:0,'], 3, 7),
