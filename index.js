@@ -95,9 +95,8 @@
         color: 'white',
         backgroundColor: 'red'
     });
-    const main2 = async () => {
+    const img2yukaMono = async (image, w, isTransparent = false) => {
         const {width, height} = image,
-              w = inputWidth(),
               h = w * (height / width) | 0,
               cv = $('<canvas>').prop({
                   width: w,
@@ -109,6 +108,9 @@
               mono = yuka.map(v => v.slice());
         const {data} = ctx.getImageData(0, 0, w, h);
         for(let i = 0; i < data.length; i += 4) {
+            if (isTransparent && data[i + 3] === 0) {
+                continue;
+            }
             const x = (i >> 2) % w,
                   y = (i >> 2) / w | 0,
                   [a, b] = getSprite(data.slice(i, i + 3));
@@ -116,6 +118,10 @@
             if(b) mono[y][x] = b;
             if(x === 0) await dialog(`${i}/${data.length}`);
         }
+        return [yuka, mono];
+    };
+    const main2 = async () => {
+        const [yuka, mono] = await img2yukaMono(image, inputWidth());
         await dialog(`映写完了`);
         const floor = yuka.map(v => v.join(' ')).join('\n'),
               map = mono.map(v => v.join(' ')).join('\n');
@@ -156,7 +162,7 @@
     };
     addTrToImageListTable();
     rpgen3.addBtn(hImageList, '画像枠追加', () => {
-        if (addTrToImageListTable.length < 17) {
+        if (imageList.length < 17) {
             addTrToImageListTable();
         }
         dialog(`${17 * imageList.length}/300占有`);
@@ -165,7 +171,41 @@
         color: 'white',
         backgroundColor: 'red'
     });
-    const main3 = () => {
+    const main3 = async () => {
+        const rpgenSpriteNumBlue = (await(await fetch('https://rpgen3.github.io/projector/data/number/lightBlue.txt')).text()).trim().split('\n');
+        const rpgenSpriteNumLime = (await(await fetch('https://rpgen3.github.io/projector/data/number/lime.txt')).text()).trim().split('\n');
+        const rpgenSpriteGround = '26991';
+        const yuka = [...Array(17)].map(() => Array(300).fill(''));
+        const mono = [...Array(17)].map(() => Array(300).fill(''));
+        for (const [imageX, image] of imageList.entries()) {
+            const offsetX = imageX * 17;
+            const offsetY = 0;
+            for (const i of Array(16).keys()) {
+                mono[offsetY][offsetX + 1 + i] = rpgenSpriteNumLime[i];
+                mono[offsetY + 1 + i][offsetX] = rpgenSpriteNumBlue[i];
+            }
+            const [_yuka, _mono] = await img2yukaMono(image, 16, true);
+            for (const y of Array(16).keys()) {
+                for (const x of Array(16).keys()) {
+                    const _y = offsetY + 1 + y;
+                    const _x = offsetX + 1 + x;
+                    yuka[_y][_x] = _yuka[y][x] || rpgenSpriteGround;
+                    mono[_y][_x] = _mono[y][x] || '';
+                }
+            }
+        }
+        await dialog(`映写完了`);
+        const floor = yuka.map(v => v.join(' ')).join('\n'),
+              map = mono.map(v => v.join(' ')).join('\n');
+        const mapData = [
+            await(await fetch('https://rpgen3.github.io/projector/data/map.txt')).text(),
+            `#FLOOR\n${floor}#END`,
+            `#MAP\n${map}#END`
+        ].join('\n\n');
+        rpgen3.addInputStr(foot.empty(),{
+            value: rpgen.set(mapData),
+            copy: true
+        });
     };
     // 映像出力
     const hVideo = $('<div>').appendTo(body).hide();
