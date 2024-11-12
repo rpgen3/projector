@@ -1,6 +1,6 @@
 (async () => {
     const {importAll, getScript} = await import(`https://rpgen3.github.io/mylib/export/import.mjs`);
-    await getScript('https://code.jquery.com/jquery-3.3.1.min.js');
+    await getScript('https://code.jquery.com/jquery-3.7.1.slim.min.js');
     const $ = window.$;
     const html = $('body').empty().css({
         'text-align': 'center',
@@ -13,10 +13,17 @@
     const rpgen3 = await importAll([
         'input',
         'url',
-        'hankaku'
+        'hankaku',
+        'css',
+        'util',
     ].map(v => `https://rpgen3.github.io/mylib/export/${v}.mjs`));
+    Promise.all([
+        'container',
+        'tab',
+        'img',
+        'btn'
+    ].map(v => `https://rpgen3.github.io/spatialFilter/css/${v}.css`).map(rpgen3.addCSS));
     $('<span>').appendTo(head).text('映写機');
-    const addBtn = (h, ttl, func) => $('<button>').appendTo(h).text(ttl).on('click', func);
     const msg = (() => {
         const elm = $('<div>').appendTo(body);
         return (str, isError) => $('<span>').appendTo(elm.empty()).text(str).css({
@@ -29,27 +36,18 @@
         msg(str);
         await sleep(30);
     };
-    $('<input>').appendTo(body).prop({
-        type: 'file',
-        accept: 'image/*,video/*'
-    }).on('change', ({target}) => {
-        const file = target.files[0],
-              {type} = file;
-        hImage.add(hVideo).hide();
-        if(type.includes('image')) {
-            image.src = URL.createObjectURL(file);
-            hImage.show();
-        }
-        else if(type.includes('video')) {
-            video.onloadedmetadata = () => {
-                fVideo.width(video.videoWidth).height(video.videoHeight);
-                hVideo.show();
-                inputStart(0);
-                inputEnd(video.duration);
-            };
-            video.controls = true;
-            video.src = URL.createObjectURL(file);
-        }
+    const selectMode = rpgen3.addSelect(body, {
+        label: '出力モード',
+        list: {
+            '選べ' : () => {},
+            '汎用一枚絵出力' : () => hImage.show(),
+            '16px画廊出力' : () => hImageList.show(),
+            '映像出力' : () => hVideo.show(),
+        },
+    });
+    selectMode.elm.on('change', () => {
+        hImage.add(hImageList).add(hVideo).hide();
+        selectMode()();
         foot.empty();
     });
     const inputType = rpgen3.addSelect(body, {
@@ -73,8 +71,16 @@
             '最頻値': 2
         }
     });
-    // 画像処理
+    // 汎用一枚絵出力
     const hImage = $('<div>').appendTo(body).hide();
+    $('<input>').appendTo($('<div>').appendTo(hImage)).prop({
+        type: 'file',
+        accept: 'image/*'
+    }).on('change', ({target:{files:[file]}}) => {
+        if(file.type.includes('image')) {
+            image.src = URL.createObjectURL(file);
+        }
+    });
     const image = $('<img>').appendTo(hImage).css({
         maxWidth:'90%'
     }).get(0);
@@ -85,7 +91,7 @@
         max: 300,
         value: 60
     });
-    addBtn(hImage.append('<br>'), '出力', () => main2()).css({
+    rpgen3.addBtn(hImage.append('<br>'), '出力', () => main2()).css({
         color: 'white',
         backgroundColor: 'red'
     });
@@ -123,8 +129,61 @@
             copy: true
         });
     };
-    // 動画処理
+    // 16px画廊出力
+    const hImageList = $('<div>').appendTo(body).hide();
+    const hImageListTable = $('<table>').appendTo($('<div>').appendTo(hImageList)).addClass('container').prop({
+        align: "center",
+        border: "1",
+    });
+    const imageList = [];
+    const addTrToImageListTable = () => {
+        const image = $('<img>').css({
+            width:16*10,
+            'image-rendering': 'pixelated'
+        }).get(0);
+        imageList.push(image);
+        const tr = $('<tr>').appendTo(hImageListTable);
+        $('<td>').appendTo(tr).text(imageList.length);
+        $('<input>').appendTo($('<td>').appendTo(tr)).prop({
+            type: 'file',
+            accept: 'image/*'
+        }).on('change', ({target:{files:[file]}}) => {
+            if(file.type.includes('image')) {
+                image.src = URL.createObjectURL(file);
+            }
+        });
+        $('<td>').appendTo(tr).append(image);
+    };
+    addTrToImageListTable();
+    rpgen3.addBtn(hImageList, '画像枠追加', () => {
+        if (addTrToImageListTable.length < 17) {
+            addTrToImageListTable();
+        }
+        dialog(`${17 * imageList.length}/300占有`);
+    });
+    rpgen3.addBtn(hImageList.append('<br>'), '出力', () => main3()).css({
+        color: 'white',
+        backgroundColor: 'red'
+    });
+    const main3 = () => {
+    };
+    // 映像出力
     const hVideo = $('<div>').appendTo(body).hide();
+    $('<input>').appendTo($('<div>').appendTo(hVideo)).prop({
+        type: 'file',
+        accept: 'video/*'
+    }).on('change', ({target:{files:[file]}}) => {
+        if(file.type.includes('video')) {
+            video.onloadedmetadata = () => {
+                fVideo.width(video.videoWidth).height(video.videoHeight);
+                hVideo.show();
+                inputStart(0);
+                inputEnd(video.duration);
+            };
+            video.controls = true;
+            video.src = URL.createObjectURL(file);
+        }
+    });
     const fVideo = $('<div>').appendTo(hVideo).css({
         position: 'relative',
         display: 'inline-block'
@@ -182,7 +241,7 @@
         max: 60,
         value: 8
     });
-    addBtn(hVideo.append('<br>'), '映写開始', () => main()).css({
+    rpgen3.addBtn(hVideo.append('<br>'), '映写開始', () => main()).css({
         color: 'white',
         backgroundColor: 'red'
     });
@@ -260,7 +319,7 @@
         save: true,
         value: 'https://www.youtube.com/watch?v=FtutLA63Cp8'
     });
-    addBtn(hVideo.append('<br>'), '出力', () => output()).css({
+    rpgen3.addBtn(hVideo.append('<br>'), '出力', () => output()).css({
         color: 'white',
         backgroundColor: 'red'
     });
