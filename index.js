@@ -172,17 +172,19 @@
         backgroundColor: 'red'
     });
     const main3 = async () => {
-        const rpgenSpriteNumBlue = (await(await fetch('https://rpgen3.github.io/projector/data/number/lightBlue.txt')).text()).trim().split('\n');
-        const rpgenSpriteNumLime = (await(await fetch('https://rpgen3.github.io/projector/data/number/lime.txt')).text()).trim().split('\n');
+        const rpgenSpriteNumBlue99 = (await(await fetch('https://rpgen3.github.io/projector/data/number/lightBlue99.txt')).text()).trim().split('\n');
+        const rpgenSpriteNumLime99 = (await(await fetch('https://rpgen3.github.io/projector/data/number/lime99.txt')).text()).trim().split('\n');
         const rpgenSpriteGround = '26991';
-        const yuka = [...Array(17)].map(() => Array(300).fill(''));
-        const mono = [...Array(17)].map(() => Array(300).fill(''));
+        const yuka = [...Array(18)].map(() => Array(300).fill(''));
+        const mono = [...Array(18)].map(() => Array(300).fill(''));
         for (const [imageX, image] of imageList.entries()) {
             const offsetX = imageX * 17;
             const offsetY = 0;
+            mono[offsetY][offsetX] = rpgenSpriteNumLime99[imageX];
             for (const i of Array(16).keys()) {
-                mono[offsetY][offsetX + 1 + i] = rpgenSpriteNumLime[i];
-                mono[offsetY + 1 + i][offsetX] = rpgenSpriteNumBlue[i];
+                mono[offsetY][offsetX + 1 + i] = rpgenSpriteNumBlue99[i];
+                mono[offsetY + 1 + i][offsetX] = rpgenSpriteNumBlue99[i];
+                mono[offsetY + 17][offsetX + 1 + i] = rpgenSpriteNumBlue99[i];
             }
             const [_yuka, _mono] = await img2yukaMono(image, 16, true);
             for (const y of Array(16).keys()) {
@@ -193,6 +195,11 @@
                     mono[_y][_x] = _mono[y][x] || '';
                 }
             }
+        }
+        for (const i of Array(16).keys()) {
+            const offsetX = imageList.length * 17;
+            const offsetY = 0;
+            mono[offsetY + 1 + i][offsetX] = rpgenSpriteNumBlue99[i];
         }
         await dialog(`映写完了`);
         const floor = yuka.map(v => v.join(' ')).join('\n'),
