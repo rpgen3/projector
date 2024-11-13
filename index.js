@@ -181,6 +181,7 @@
             const offsetX = imageX * 17;
             const offsetY = 0;
             mono[offsetY][offsetX] = rpgenSpriteNumLime99[imageX];
+            mono[offsetY + 17][offsetX] = rpgenSpriteNumLime99[imageX];
             for (const i of Array(16).keys()) {
                 mono[offsetY][offsetX + 1 + i] = rpgenSpriteNumBlue99[i];
                 mono[offsetY + 1 + i][offsetX] = rpgenSpriteNumBlue99[i];
